@@ -1,0 +1,37 @@
+
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.23
+    commands:
+      - go version
+
+  pre_build:
+    commands:
+      - echo "Downloading dependencies..."
+      - go mod download
+      - echo "Running tests..."
+      - go test ./...
+
+  build:
+    commands:
+      - echo "Building Gateway..."
+      - mkdir -p dist
+      - go build -o dist/gateway ./gateway
+      - echo "Building Auth service..."
+      - go build -o dist/auth ./services/auth
+      - echo "Building Products service..."
+      - go build -o dist/products ./services/products
+      - echo "Building Orders service..."
+      - go build -o dist/orders ./services/orders
+
+  post_build:
+    commands:
+      - echo "Build and test phases completed."
+
+artifacts:
+  files:
+    - dist/**/*
+  discard-paths: no
